@@ -1,34 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # */AIPND-revision/intropyproject-classify-pet-images/classify_images.py
-#                                                                             
-# PROGRAMMER: 
-# DATE CREATED:                                 
-# REVISED DATE: 
-# PURPOSE: Create a function classify_images that uses the classifier function 
-#          to create the classifier labels and then compares the classifier 
-#          labels to the pet image labels. This function inputs:
-#            -The Image Folder as image_dir within classify_images and function 
-#             and as in_arg.dir for function call within main. 
-#            -The results dictionary as results_dic within classify_images 
-#             function and results for the functin call within main.
-#            -The CNN model architecture as model wihtin classify_images function
-#             and in_arg.arch for the function call within main. 
-#           This function uses the extend function to add items to the list 
-#           that's the 'value' of the results dictionary. You will be adding the
-#           classifier label as the item at index 1 of the list and the comparison 
-#           of the pet and classifier labels as the item at index 2 of the list.
-#
-##
-# Imports classifier function for using CNN to classify images 
-from classifier import classifier 
 
-# TODO 3: Define classify_images function below, specifically replace the None
-#       below by the function definition of the classify_images function. 
-#       Notice that this function doesn't return anything because the 
-#       results_dic dictionary that is passed into the function is a mutable 
-#       data type so no return is needed.
-# 
+from classifier import classifier
+
+
 def classify_images(images_dir, results_dic, model):
     """
     Creates classifier labels with classifier function, compares pet labels to 
@@ -65,75 +41,18 @@ def classify_images(images_dir, results_dic, model):
      Returns:
            None - results_dic is mutable data type so no return needed.         
     """
-    
-    # Process all files in the results_dic - use images_dir to give fullpath
-    # that indicates the folder and the filename (key) to be used in the
-    # classifier function
+
     for file_name in results_dic:
+        img_path = images_dir + "/" + file_name + ".jpg"
+        model_label = classifier(img_path, model)
+        model_label_list = model_label.split(',')
+        model_label_list = map(lambda x: x.lower().strip(), model_label_list)
+        model_label = (", ").join(model_label_list)
 
-       # TODO: 3a. Set the string variable model_label to be the string that's
-       #           returned from using the classifier function instead of the
-       #           empty string below.
-       #
-       #  Runs classifier function to classify the images classifier function
-       # inputs: path + filename  and  model, returns model_label
-       # as classifier label
-      img_path = images_dir + "/" + file_name + ".jpg"
-      model_label = classifier(img_path, model)
+        truth = results_dic[file_name][0]
+        if truth in model_label:
+            results_dic[file_name].extend([model_label, 1])
+        else:
+            results_dic[file_name].extend([model_label, 0])
 
-       # TODO: 3b. BELOW REPLACE pass with CODE to process the model_label to
-       #           convert all characters within model_label to lowercase
-       #           letters and then remove whitespace characters from the ends
-       #           of model_label. Be certain the resulting processed string
-       #           is named model_label.
-       #
-       # Processes the results so they can be compared with pet image labels
-       # set labels to lowercase (lower) and stripping off whitespace(strip)
-      model_label_list = model_label.split(',')
-      model_label_list = map(lambda x: x.lower().strip(), model_label_list)
-      model_label = (", ").join(model_label_list)
-        
-      # defines truth as pet image label
-      truth = results_dic[file_name][0]
-
-      # TODO: 3c. REPLACE pass BELOW with CODE that uses the extend list function
-      #           to add the classifier label (model_label) and the value of
-      #           1 (where the value of 1 indicates a match between pet image
-      #           label and the classifier label) to the results_dic dictionary
-      #           for the key indicated by the variable key
-      #
-      # If the pet image label is found within the classifier label list of terms
-      # as an exact match to on of the terms in the list - then they are added to
-      # results_dic as an exact match(1) using extend list function
-      if truth in model_label:
-        results_dic[file_name].extend([model_label, 1])
-
-       # TODO: 3d. REPLACE pass BELOW with CODE that uses the extend list function
-       #           to add the classifier label (model_label) and the value of
-       #           0 (where the value of 0 indicates NOT a match between the pet
-       #           image label and the classifier label) to the results_dic
-       #           dictionary for the key indicated by the variable key
-       #
-       # if not found then added to results dictionary as NOT a match(0) using
-       # the extend function
-      else:
-       results_dic[file_name].extend([model_label, 0])
-    
-      # Iterates through the list to print the results for each filename
-#     for key in results_dic:
-#         print("\nresults_dic[key]", results_dic[key])
-#       print("\nFilename=", key, "\npet_image Label=", results_dic[key][0],
-#             "\nClassifier Label=", results_dic[key][1], "\nmatch=",
-#             results_dic[key][2], "\nImage is dog=", results_dic[key][3],
-#              "\nClassifier is dog=", results_dic[key][4])                        
-
-#       # Provides classifications of the results
-#       if sum(results_dic[key][2:]) == 3:
-#         print("*Breed Match*")
-#       if sum(results_dic[key][3:]) == 2:
-#         print("*Is-a-Dog Match*")
-#       if sum(results_dic[key][3:]) == 0 and results_dic[key][2] == 1:
-#         print("*NOT-a-Dog Match*")
-    
-    None 
-    
+    None
